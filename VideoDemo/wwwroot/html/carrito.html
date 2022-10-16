@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Detalle carrito</title>
+  <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+  <div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <div class="row">
+          <div class="col">
+            <input type="text" class="form-control" id="nombreCliente" placeholder="Nombre" aria-label="Nombre del cliente" disabled>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="idPedido" placeholder="Id" aria-label="Id del pedido" disabled>
+          </div>
+          <div class="col">
+            <input type="date" class="form-control" id="fechaPedido" placeholder="Fecha" aria-label="Fecha del pedido" disabled>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <div class="row">
+      <div class="col">
+        <select class="form-control" id="listProductos"></select>
+      </div>
+      <div class="col">
+        <input type="number" class="form-control" id="inputCantidad" placeholder="Cantidad" aria-label="Cantidad">
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" id="inputNotas" placeholder="Notas" aria-label="Notas">
+      </div>
+      <div class="col">
+        <input type="button" class="btn btn-success" id="btnAgregar" onclick="addItem()" value="Agregar item">
+      </div>
+    </div>
+
+    <br />
+
+
+    <div class="row">
+      <div class="col">
+
+        <table class="table table-striped" id="detalleTabla">
+          <thead>
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Precio</th>
+              <th scope="col">Notas</th>
+              <th scope="col">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/lib/jquery/dist/jquery.min.js"></script>
+  <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script type="text/javascript">
+
+    var carritoId = 0;
+
+
+
+    const getProductos = async () => {
+
+      await fetch('/api/producto/getProductos')
+        .then(response => response.json())
+        .then(data => {
+
+          console.log(data)
+
+          
+          let select = document.getElementById('listProductos');
+
+          data.forEach(producto => {
+
+            let opt = document.createElement('option');
+            opt.value = producto.id;
+            opt.innerHTML = producto.nombre + ' ($' + producto.precio +')';
+            select.appendChild(opt);
+ 
+          }) 
+      
+        })
+ 
+    }
+
+    const llenarDetalle = async () => {
+
+      const urlParams = new URLSearchParams(window.location.search);
+      carritoId = urlParams.get('id');
+
+      let table = document.getElementById("detalleTabla");
+      let tbody = table.getElementsByTagName("tbody")[0];
+
+      await fetch('/api/carrito/getcarrito?id=' + carritoId)
+        .then(response => response.json())
+        .then(data => {
+
+          tbody.innerHTML = '';
+
+          document.getElementById("nombreCliente").value = data.cliente.nombreApellido;
+          document.getElementById("idPedido").value = data.id;
+          document.getElementById("fechaPedido").value = data.fechaCreacion.substring(0, 10);
+
+          data.detalle.forEach(detalle => {
+
+            var row = document.createElement("tr");
+
+            var idTd = document.createElement("td");
+            var nombreTd = document.createElement("td");
+            var CantidadTd = document.createElement("td");
+            var precioTd = document.createElement("td");
+            var notadTd = document.createElement("td");
+
+
+            idTd.innerHTML = detalle.id;
+            nombreTd.innerHTML = detalle.producto.nombre;
+            CantidadTd.innerHTML = detalle.cantidad;
+            precioTd.innerHTML = detalle.producto.precio;
+            notadTd.innerHTML = detalle.notas;
+
+
+            row.appendChild(idTd);
+            row.appendChild(nombreTd);
+            row.appendChild(precioTd);
+            row.appendChild(notadTd);
+            row.appendChild(CantidadTd);
+
+
+            tbody.appendChild(row);
+          })
+
+        });
+ 
+    }
+
+    const addItem = async () => {
+
+      let url = '/api/carrito/CreateItem';
+
+      let productoId = document.getElementById('listProductos').value;
+      let notas = document.getElementById('inputNotas').value;
+      let cantidad = document.getElementById('inputCantidad').value;
+
+      let data = {
+        notas: notas,
+        productoId: parseInt(productoId),
+        cantidad: parseInt(cantidad),
+        carritoId: parseInt(carritoId)
+      };
+
+      await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => res.text())
+        .catch(error => console.error('Error:', error))
+        .then(response => {
+
+          console.log('Success:', response)
+
+          llenarDetalle();
+
+        });
+
+
+
+    }
+
+    const init = async () => {
+
+      await getProductos();
+
+      await llenarDetalle();
+
+    }
+
+    init();
+
+
+  </script>
+
+
+
+</body>
+</html>
