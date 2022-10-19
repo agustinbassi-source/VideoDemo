@@ -37,6 +37,10 @@ namespace VideoDemo
 
       services.AddTransient<IProductoRepository, ProductoRepository>();
       services.AddTransient<IProductoBusiness, ProductoBusiness>();
+
+
+      services.AddTransient<IProveedorRepository, ProveedorRepository>();
+      services.AddTransient<IProveedorBusiness, ProveedorBusiness>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VideoDemo.Repository;
 
 namespace VideoDemo.Repository.Migrations
 {
     [DbContext(typeof(VideoDemoContext))]
-    partial class VideoDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20221019002616_inicial")]
+    partial class inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,27 +84,6 @@ namespace VideoDemo.Repository.Migrations
                     b.ToTable("ItemCarrito");
                 });
 
-            modelBuilder.Entity("VideoDemo.Models.Models.Proveedor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NombreProveedor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Telefono")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Proveedor");
-                });
-
             modelBuilder.Entity("VideoDemo.Models.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -116,12 +97,7 @@ namespace VideoDemo.Repository.Migrations
                     b.Property<int>("Precio")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProveedorId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ProveedorId");
 
                     b.ToTable("Producto");
                 });
@@ -146,15 +122,6 @@ namespace VideoDemo.Repository.Migrations
                     b.HasOne("VideoDemo.Models.Producto", "Producto")
                         .WithMany()
                         .HasForeignKey("ProductoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("VideoDemo.Models.Producto", b =>
-                {
-                    b.HasOne("VideoDemo.Models.Models.Proveedor", "Proveedor")
-                        .WithMany()
-                        .HasForeignKey("ProveedorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

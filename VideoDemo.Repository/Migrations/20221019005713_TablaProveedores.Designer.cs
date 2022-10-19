@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VideoDemo.Repository;
 
 namespace VideoDemo.Repository.Migrations
 {
     [DbContext(typeof(VideoDemoContext))]
-    partial class VideoDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20221019005713_TablaProveedores")]
+    partial class TablaProveedores
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
